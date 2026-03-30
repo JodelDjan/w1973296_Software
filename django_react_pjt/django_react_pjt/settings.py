@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'users',
     'posts',
     'rest_framework',
+    'corsheaders',
 ]
 
 #JWT Authentication
@@ -52,10 +53,13 @@ REST_FRAMEWORK = {
 }
 
 #CORS Settings
-
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+]
 
 #CORS_ALLOW_CREDENTIALS = True
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware'
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
