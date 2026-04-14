@@ -59,6 +59,11 @@ class CustomUserManager(BaseUserManager):
    
     #Sign up fields
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+        
+        GENERAL_USER = 'general_user'
+        RESEARCHER   = 'researcher'
+        ADMIN        = 'admin'
+        
         first_name = models.CharField(max_length=40)
         last_name = models.CharField(max_length=40)
         email = models.EmailField(unique=True)

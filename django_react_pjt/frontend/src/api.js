@@ -20,3 +20,12 @@ export const searchPosts = (query) =>
   fetch(`${BASE_URL}/posts/search/?q=${query}`, {
     headers: { Authorization: `Bearer ${token()}` }
   }).then(res => res.json())
+
+export const applyToPost = (postId) =>
+  fetch(`${BASE_URL}/posts/${postId}/apply/`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token()}`
+    }
+  }).then(res => res.json())
