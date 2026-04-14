@@ -13,7 +13,11 @@ class PostListView(generics.ListAPIView):
     serializer_class   = PostSerializer
     permission_classes = [AllowAny]
 
-
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return Post.objects.all().order_by('-created_at')
+        return Post.objects.all().order_by('-created_at')[:3] #Limit to 3 posts
+    
 class PostCreateView(generics.CreateAPIView):
     """Only researchers can create posts"""
     serializer_class   = PostSerializer

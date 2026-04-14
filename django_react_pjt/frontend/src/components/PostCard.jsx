@@ -6,6 +6,9 @@ export default function PostCard({ post }) {
     const role = localStorage.getItem('role')
       const [applied, setApplied]   = useState(false)
       const [error, setError]       = useState(null)
+      const token = localStorage.getItem('token')
+      const isAuthenticated = !!token
+      
 
     const handleApply = async (postId) => {
         const response = await applyToPost(postId)
@@ -29,16 +32,20 @@ export default function PostCard({ post }) {
       <p>Posted by: {post.author_name}</p>
 
 
-       {role === 'general_user' && (
-        <>
-          {applied ? (
-            <p>Application submitted successfully.</p>
-          ) : (
-            <button onClick={() => handleApply(post.id)}>Apply</button>
-          )}
-          {error && <p style={{ color: 'red' }}>{error}</p>}
-        </>
-      )}
-    </div>
-    )
-  }
+    {!isAuthenticated ? (
+      <p>
+        <a href="/login">Log in</a> to apply to this post.
+      </p>
+    ) : role === 'general_user' ? (
+      <>
+        {applied ? (
+          <p>Application submitted successfully.</p>
+        ) : (
+          <button onClick={() => handleApply(post.id)}>Apply</button>
+        )}
+        {error && <p style={{ color: 'red' }}>{error}</p>}
+      </>
+    ) : null}
+  </div>
+  )
+}
