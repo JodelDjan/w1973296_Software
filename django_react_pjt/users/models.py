@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin 
 # Create your models here.
 
- #Tag Choices
+#Tag Choices
 TAG_CHOICES =[
         ('health and fitness', 'Health and Fitness'),
         ('mental health', 'Mental Health'),
@@ -22,7 +22,7 @@ TAG_CHOICES =[
         ('software development', 'Software Development'),
     ]
 
-    # Range Choices
+# Range Choices
 AGE_RANGE_CHOICES = [
         ('18-25', '18-25'),
         ('25-40', '25-40'),
@@ -55,9 +55,7 @@ class CustomUserManager(BaseUserManager):
         return self.create_user(email, password, **extra_fields)
     
 
-    
-   
-    #Sign up fields
+#Sign up fields
 class CustomUser(AbstractBaseUser, PermissionsMixin):
         
         GENERAL_USER = 'general_user'
@@ -82,7 +80,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         def __str__(self):
             return f"{self.email} ({self.role})"
     
-    #Researcher Profile
+#Researcher Profile
 class ResearcherProfile(models.Model):
         user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='researcher_profile')
         bio = models.TextField()
@@ -92,7 +90,7 @@ class ResearcherProfile(models.Model):
         def __str__(self):
              return f"Researcher Profile - {self.user.email}"
         
-        #General Profile
+#General Profile
 class GeneralProfile(models.Model):
         user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='general_profile')
         age_range = models.CharField(max_length=10, choices =AGE_RANGE_CHOICES)
