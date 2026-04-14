@@ -1,6 +1,6 @@
 from rest_framework import generics, status
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from .models import Post, Application
 from .serializers import PostSerializer, ApplicationSerializer
@@ -8,10 +8,10 @@ from .permissions import IsResearcher
 from users.models import CustomUser
 
 class PostListView(generics.ListAPIView):
-    """Any logged in user can view posts"""
+    """Any logged in user can view posts and guests can too"""
     queryset           = Post.objects.all().order_by('-created_at')
     serializer_class   = PostSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
 
 class PostCreateView(generics.CreateAPIView):
