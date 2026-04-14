@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { getPosts } from '../api'
-import Navbar from './components/Navbar'
-import Feed from './components/Feed'
-import CreatePost from './components/CreatePost'
+import Navbar from '../components/Navbar'
+import Feed from '../components/Feed'
+import CreatePost from '../components/CreatePost'
 
 export default function Home() {
   const role = localStorage.getItem('role')

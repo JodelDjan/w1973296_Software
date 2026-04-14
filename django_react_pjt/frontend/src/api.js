@@ -29,3 +29,34 @@ export const applyToPost = (postId) =>
       Authorization: `Bearer ${token()}`
     }
   }).then(res => res.json())
+
+  export class APIError extends Error {
+  constructor(message, status, details) {
+    super(message)
+    this.status = status
+    this.details = details
+  }
+}
+
+export const apiRequest = async (endpoint, options = {}) => {
+  const response = await fetch(`${BASE_URL}${endpoint}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token()}`,
+      ...options.headers
+    }
+  })
+
+  const data = await response.json()
+
+  if (!response.ok) {
+    throw new APIError(
+      data.detail || 'Request failed',
+      response.status,
+      data
+    )
+  }
+
+  return data
+}

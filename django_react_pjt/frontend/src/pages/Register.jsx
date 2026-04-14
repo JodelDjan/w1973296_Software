@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { apiRequest, APIError } from "./utils/api";
+import { apiRequest, APIError } from "../api";
 
 const TAG_OPTIONS = [
   "Health & Fitness",
@@ -32,7 +32,7 @@ export default function Register() {
     lastName: "",
     email: "",
     password: "",
-    role: "general",
+    role: "general_user",
     researchArea: "",
     bio: "",
     tags: [],
@@ -168,7 +168,7 @@ function toggleInterest(tag) {
         <label>
           Role
           <select name="role" value={form.role} onChange={handleChange}>
-            <option value="general">General User</option>
+            <option value="general_user">General User</option>
             <option value="researcher">Researcher</option>
           </select>
         </label>
