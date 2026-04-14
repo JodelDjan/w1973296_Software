@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { createPost, getPosts } from '../api'
+import { createPost, getPosts } from '/src'
 
 export default function CreatePost({ setPosts }) {
   const [content, setContent] = useState('')

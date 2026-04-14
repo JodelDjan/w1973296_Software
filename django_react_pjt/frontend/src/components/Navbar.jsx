@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { searchPosts, getPosts } from '../api'
+import { searchPosts, getPosts } from '/src'
 
 export default function Navbar({ setPosts }) {
   const [query, setQuery] = useState('')
