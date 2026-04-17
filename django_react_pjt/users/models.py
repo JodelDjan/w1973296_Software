@@ -22,7 +22,7 @@ TAG_CHOICES =[
         ('software development', 'Software Development'),
     ]
 
-# Range Choices
+#Range Choices
 AGE_RANGE_CHOICES = [
         ('18-25', '18-25'),
         ('25-40', '25-40'),
@@ -30,6 +30,7 @@ AGE_RANGE_CHOICES = [
         ('60+',   '60+'),
     ]
 
+#Role Choices
 ROLE_CHOICES = [
     ('general_user', 'General User'),
     ('researcher',   'Researcher'),

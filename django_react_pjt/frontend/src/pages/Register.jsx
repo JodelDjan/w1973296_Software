@@ -88,7 +88,7 @@ function toggleInterest(tag) {
     };
 
     try {
-      await apiRequest("/accounts/register/", {
+      await apiRequest("/users/register/", {
         method: "POST",
         body: JSON.stringify(payload),
       });

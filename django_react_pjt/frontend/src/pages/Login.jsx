@@ -19,52 +19,47 @@ export default function Login() {
     if (error) setError("");
   }
 
-  async function handleSubmit(e) {
-    e.preventDefault();
-    setError("");
-    setIsLoading(true);
+async function handleSubmit(e) {
+  e.preventDefault()
+  setError("")
+  setIsLoading(true)
 
-    try {
-      // Login request
-      const data = await apiRequest("/accounts/login/", {
-        method: "POST",
-        body: JSON.stringify({
-          email: form.email,
-          password: form.password,
-        }),
-      });
+  try {
+    const data = await apiRequest("/users/login/", {
+      method: "POST",
+      body: JSON.stringify({
+        email: form.email,
+        password: form.password,
+      }),
+    })
 
-      // Save tokens
-      localStorage.setItem("access", data.access);
-      localStorage.setItem("refresh", data.refresh);
+    localStorage.setItem('token', data.access)
+    localStorage.setItem('refresh', data.refresh)
+    localStorage.setItem('role', data.role)
 
-      // Get user role
-      const userRole = await apiRequest("/accounts/me/", {
-        headers: getAuthHeaders(),
-      });
-
-      // Navigate based on role
-      if (userRole.role === "researcher") {
-        navigate("/");
-      }
-
-    } catch (err) {
-      if (err instanceof APIError) {
-        if (err.status === 0) {
-          setError("Cannot connect to server. Is Django running on port 8000?");
-        } else if (err.status === 401) {
-          setError("Invalid email or password");
-        } else {
-          setError(err.message || "An error occurred during login");
-        }
-      } else {
-        setError("An unexpected error occurred");
-      }
-      console.error("Login error:", err);
-    } finally {
-      setIsLoading(false);
+    if (data.role === 'researcher') {
+      navigate('/')
+    } else {
+      navigate('/')
     }
+
+  } catch (err) {
+    if (err instanceof APIError) {
+      if (err.status === 0) {
+        setError("Cannot connect to server. Is Django running on port 8000?")
+      } else if (err.status === 401) {
+        setError("Invalid email or password")
+      } else {
+        setError(err.message || "An error occurred during login")
+      }
+    } else {
+      setError("An unexpected error occurred")
+    }
+    console.error("Login error:", err)
+  } finally {
+    setIsLoading(false)
   }
+}
 
   return (
     <div style={{ maxWidth: "400px", margin: "0 auto", padding: "1rem" }}>

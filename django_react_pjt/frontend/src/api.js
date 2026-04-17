@@ -39,13 +39,20 @@ export const applyToPost = (postId) =>
 }
 
 export const apiRequest = async (endpoint, options = {}) => {
+  const authToken = token()
+  
+  const headers = {
+    'Content-Type': 'application/json',
+    ...options.headers
+  }
+
+  if (authToken) {
+    headers.Authorization = `Bearer ${authToken}`
+  }
+
   const response = await fetch(`${BASE_URL}${endpoint}`, {
     ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token()}`,
-      ...options.headers
-    }
+    headers
   })
 
   const data = await response.json()
