@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { createPost, getPosts } from '../api'
 
-//Tag Choices
+//Tag Options
 const TAG_OPTIONS =[
   'Health and Fitness',
   'Mental Health',

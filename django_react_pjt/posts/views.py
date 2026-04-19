@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from .models import Post, Application
-from .serializers import PostSerializer, ApplicationSerializer
+from .serializers import PostSerializer, ApplicationSerializer, CreatePostSerializer
 from .permissions import IsResearcher
 from users.models import CustomUser
 
@@ -91,3 +91,32 @@ class ResearcherDashboardView(APIView):
                 ]
             })
         return Response(data)
+    
+class EditPostView(APIView):
+    permission_classes = [IsAuthenticated, IsResearcher]
+
+    def patch(self, request, post_id):
+        try:
+            post = Post.objects.get(id=post_id, author=request.user)
+        except Post.DoesNotExist:
+            return Response({'error': 'Post not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = CreatePostSerializer(post, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ClosePostView(APIView):
+    permission_classes = [IsAuthenticated, IsResearcher]
+
+    def patch(self, request, post_id):
+        try:
+            post = Post.objects.get(id=post_id, author=request.user)
+        except Post.DoesNotExist:
+            return Response({'error': 'Post not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        post.state = 'closed'
+        post.save()
+        return Response({'message': 'Post closed successfully.'}, status=status.HTTP_200_OK)

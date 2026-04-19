@@ -20,7 +20,7 @@ export default function Home() {
 
 return (
     <div>
-      <Navbar setPosts={setPosts} />
+      <Navbar setPosts = {activeTab === 'feed' && <Feed posts={posts} setPosts={setPosts} />} />
       {role === 'researcher' && <CreatePost setPosts={setPosts} />}
 
       {/* Tab buttons */}

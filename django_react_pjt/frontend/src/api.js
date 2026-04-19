@@ -74,3 +74,22 @@ export const getResearchers = () =>
 
 export const getDashboard = () =>
   apiRequest('/posts/dashboard/')
+
+//Edit post 
+export const editPost = (postId, formData) =>
+  apiRequest(`/posts/${postId}/edit/`, {
+    method: 'PATCH',
+    body: JSON.stringify({
+      title:            formData.title,
+      body:             formData.body,
+      tags:             formData.tags,
+      max_participants: formData.max_participants,
+      start_date:       formData.start_date,
+    })
+  })
+
+//Close post
+export const closePost = (postId) =>
+  apiRequest(`/posts/${postId}/close/`, {
+    method: 'PATCH',
+  })
