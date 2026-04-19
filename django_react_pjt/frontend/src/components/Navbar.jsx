@@ -1,24 +1,25 @@
-import { useState } from 'react'
-import { searchPosts, getPosts } from '../api'
+//import { useState } from 'react'
+//import { searchPosts, getPosts } from '../api'
 import { useNavigate } from 'react-router-dom'
 
+//Change the dashboard to show in profile instead
 export default function Navbar({ setPosts }) {
-  const [query, setQuery] = useState('')
   const navigate = useNavigate()
+  const role     = localStorage.getItem('role')
 
-  const handleSearch = () => {
-    if (query.trim()) {
-      searchPosts(query).then(data => setPosts(data))
-    } else {
-      getPosts().then(data => setPosts(data))  // resets the text if search is cleared
-    }
-  }
-
-   return (
+  return (
     <nav>
       <input type="text" placeholder="Search posts..." />
-      <span 
-        onClick={() => navigate('/profile')} 
+      {role === 'researcher' && (
+        <span
+          onClick={() => navigate('/dashboard')}
+          style={{ cursor: 'pointer', marginRight: '1rem' }}
+        >
+          Dashboard
+        </span>
+      )}
+      <span
+        onClick={() => navigate('/profile')}
         style={{ cursor: 'pointer' }}
       >
         Profile

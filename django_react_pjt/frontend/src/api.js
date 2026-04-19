@@ -2,9 +2,7 @@ const BASE_URL = 'http://localhost:8000/api'
 const token = () => localStorage.getItem('token')
 
 export const getPosts = () =>
-  fetch(`${BASE_URL}/posts/`, {
-    headers: { Authorization: `Bearer ${token()}` }
-  }).then(res => res.json())
+  apiRequest('/posts/')
 
 export const createPost = (content) =>
   fetch(`${BASE_URL}/posts/create/`, {
@@ -17,9 +15,7 @@ export const createPost = (content) =>
   }).then(res => res.json())
 
 export const searchPosts = (query) =>
-  fetch(`${BASE_URL}/posts/search/?q=${query}`, {
-    headers: { Authorization: `Bearer ${token()}` }
-  }).then(res => res.json())
+  apiRequest(`/posts/search/?q=${query}`)
 
 export const applyToPost = (postId) =>
   fetch(`${BASE_URL}/posts/${postId}/apply/`, {
@@ -69,6 +65,10 @@ export const apiRequest = async (endpoint, options = {}) => {
 }
 
 export const getProfile = () =>
-  fetch(`${BASE_URL}/users/profile/`, {
-    headers: { Authorization: `Bearer ${token()}` }
-  }).then(res => res.json())
+  apiRequest('/users/profile/')
+
+export const getResearchers = () =>
+  apiRequest('/users/directory/')
+
+export const getDashboard = () =>
+  apiRequest('/posts/dashboard/')

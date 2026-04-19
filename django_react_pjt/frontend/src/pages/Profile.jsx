@@ -35,7 +35,7 @@ export default function Profile() {
           </div>
 
           <div>
-            <h3>Research Areas</h3>
+            <h3>Research Area</h3>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
               {profile.tags && profile.tags.map(tag => (
                 <span key={tag} style={{

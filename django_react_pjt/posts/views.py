@@ -68,3 +68,26 @@ class ApplyToPostView(APIView):
         )
         serializer = ApplicationSerializer(application)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+class ResearcherDashboardView(APIView):
+    permission_classes = [IsAuthenticated, IsResearcher]
+
+    def get(self, request):
+        posts = Post.objects.filter(author=request.user).prefetch_related('applications__user')
+        data = []
+        for post in posts:
+            applications = post.applications.all()
+            data.append({
+                'post_id':           post.id,
+                'title':             post.title,
+                'application_count': applications.count(),
+                'applicants': [
+                    {
+                        'first_name': app.user.first_name,
+                        'last_name':  app.user.last_name,
+                        'email':      app.user.email,
+                    }
+                    for app in applications
+                ]
+            })
+        return Response(data)

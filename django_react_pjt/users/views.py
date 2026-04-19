@@ -64,10 +64,32 @@ class ProfileView(APIView):
 
         elif user.role == CustomUser.GENERAL_USER:
             try:
-                profile = user.general_user_profile
+                profile = user.general_profile
                 data['age_range'] = profile.age_range
                 data['tags']      = profile.tags
             except GeneralProfile.DoesNotExist:
                 pass
 
         return Response(data)
+
+class ResearcherDirectoryView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        researchers = CustomUser.objects.filter(role=CustomUser.RESEARCHER)
+        data = []
+        for researcher in researchers:
+            entry = {
+                'first_name': researcher.first_name,
+                'last_name':  researcher.last_name,
+            }
+            try:
+                profile = researcher.researcher_profile
+                entry['tags']       = profile.tags
+                entry['department'] = profile.department
+            except ResearcherProfile.DoesNotExist:
+                entry['tags']       = []
+                entry['department'] = ''
+            data.append(entry)
+        return Response(data)
+    
