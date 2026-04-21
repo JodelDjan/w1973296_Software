@@ -13,6 +13,7 @@ export const createPost = (formData) =>
       tags:             formData.tags,
       max_participants: formData.max_participants,
       start_date:       formData.start_date,
+      research_link:    formData.research_link,
     })
   })
 
@@ -85,6 +86,7 @@ export const editPost = (postId, formData) =>
       tags:             formData.tags,
       max_participants: formData.max_participants,
       start_date:       formData.start_date,
+      research_link:    formData.research_link,
     })
   })
 
