@@ -20,6 +20,7 @@ class Post(models.Model):
     state = models.CharField(max_length=10, choices= STATE_CHOICES, default="open")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    research_link = models.URLField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.title} ({self.author.email})"
