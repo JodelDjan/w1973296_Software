@@ -118,7 +118,7 @@ function validate() {
       role: form.role,
       researcher_profile: form.role === 'researcher' ? {
           bio:        form.bio,
-          department: form.researchArea,  
+          research_area: form.researchArea,  // Research area maps to department
           tags:       form.tags,
         } : undefined,
         general_user_profile: form.role === 'general_user' ? {

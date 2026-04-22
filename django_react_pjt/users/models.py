@@ -85,7 +85,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 class ResearcherProfile(models.Model):
         user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='researcher_profile')
         bio = models.TextField()
-        resarch_area = models.CharField(max_length = 100)
+        research_area = models.CharField(max_length = 100)
         tags = models.JSONField(default=list) #to tstore a list of tag keys
 
         def __str__(self):

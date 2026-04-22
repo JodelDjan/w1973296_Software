@@ -6,6 +6,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from .serializers import SignUpSerializer
 from .models import CustomUser, ResearcherProfile, GeneralProfile
+from posts.models import Post
+from posts.serializers import PostSerializer
 
 
 class SignUpView(APIView):
@@ -59,7 +61,7 @@ class ProfileView(APIView):
             try:
                 profile = user.researcher_profile
                 data['bio']        = profile.bio
-                data['department'] = profile.department
+                data['research_area'] = profile.research_area
                 data['tags']       = profile.tags
             except ResearcherProfile.DoesNotExist:
                 pass
@@ -82,16 +84,48 @@ class ResearcherDirectoryView(APIView):
         data = []
         for researcher in researchers:
             entry = {
+                'id':         researcher.id,
                 'first_name': researcher.first_name,
                 'last_name':  researcher.last_name,
             }
             try:
                 profile = researcher.researcher_profile
                 entry['tags']       = profile.tags
-                entry['department'] = profile.department
+                entry['research_area'] = profile.research_area
             except ResearcherProfile.DoesNotExist:
                 entry['tags']       = []
-                entry['department'] = ''
+                entry['research_area'] = ''
             data.append(entry)
         return Response(data)
     
+class PublicResearcherProfileView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, user_id):
+        try:
+            researcher = CustomUser.objects.get(id=user_id, role=CustomUser.RESEARCHER)
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'Researcher not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        data = {
+            'first_name': researcher.first_name,
+            'last_name':  researcher.last_name,
+            'role':       researcher.role,
+        }
+
+        try:
+            profile        = researcher.researcher_profile
+            data['bio']        = profile.bio
+            data['research_area'] = profile.research_area
+            data['tags']       = profile.tags
+        except ResearcherProfile.DoesNotExist:
+            data['bio']        = ''
+            data['research_area'] = ''
+            data['tags']       = []
+        
+        posts         = Post.objects.filter(author=researcher).order_by('-created_at')
+        data['posts'] = PostSerializer(posts, many=True).data
+
+        return Response(data)
+    
+

@@ -95,3 +95,7 @@ export const closePost = (postId) =>
   apiRequest(`/posts/${postId}/close/`, {
     method: 'PATCH',
   })
+
+//Researcher public profile
+export const getPublicProfile = (userId) =>
+  apiRequest(`/users/profile/${userId}/`)

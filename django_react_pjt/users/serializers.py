@@ -4,7 +4,7 @@ from .models import CustomUser, ResearcherProfile, GeneralProfile
 class ResearcherProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model  = ResearcherProfile
-        fields = ['bio', 'department', 'tags']
+        fields = ['bio', 'research_area', 'tags']
 
 
 class GeneralProfileSerializer(serializers.ModelSerializer):
@@ -30,12 +30,13 @@ class SignUpSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        researcher_data  = validated_data.pop('researcher_profile', None)
+        researcher_data   = validated_data.pop('researcher_profile', None)
         general_user_data = validated_data.pop('general_profile', None)
         validated_data.pop('password2')
+        password = validated_data.pop('password')
 
         user = CustomUser(**validated_data)
-        user.set_password(validated_data['password'])
+        user.set_password(password)
         user.save()
 
         if researcher_data:
