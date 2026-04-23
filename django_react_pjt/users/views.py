@@ -129,3 +129,37 @@ class PublicResearcherProfileView(APIView):
         return Response(data)
     
 
+class EditProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request):
+        user = request.user
+        data = request.data
+
+        # Update base user fields
+        user.first_name = data.get('first_name', user.first_name)
+        user.last_name  = data.get('last_name', user.last_name)
+        user.save()
+
+        if user.role == CustomUser.RESEARCHER:
+            try:
+                profile = user.researcher_profile
+            except ResearcherProfile.DoesNotExist:
+                profile = ResearcherProfile(user=user)
+
+            profile.bio           = data.get('bio', profile.bio)
+            profile.research_area = data.get('research_area', profile.research_area)
+            profile.tags          = data.get('tags', profile.tags)
+            profile.save()
+
+        elif user.role == CustomUser.GENERAL_USER:
+            try:
+                profile = user.general_user_profile
+            except GeneralProfile.DoesNotExist:
+                profile = GeneralProfile(user=user)
+
+            profile.age_range = data.get('age_range', profile.age_range)
+            profile.tags      = data.get('tags', profile.tags)
+            profile.save()
+
+        return Response({'message': 'Profile updated successfully.'}, status=status.HTTP_200_OK)

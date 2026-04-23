@@ -99,3 +99,10 @@ export const closePost = (postId) =>
 //Researcher public profile
 export const getPublicProfile = (userId) =>
   apiRequest(`/users/profile/${userId}/`)
+
+//Edit Profile
+export const updateProfile = (formData) =>
+  apiRequest('/users/profile/edit/', {
+    method: 'PATCH',
+    body: JSON.stringify(formData)
+  })
