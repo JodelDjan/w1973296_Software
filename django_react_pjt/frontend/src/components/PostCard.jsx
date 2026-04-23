@@ -248,7 +248,9 @@ async function handleFinalApply() {
   <>
     {applied ? (
       <p>Application submitted successfully.</p>
-    ) : showPreApply ? (
+    ) : post.max_participants === 0 ? (
+      <p style={{ color: '#dc2626' }}>This post is no longer accepting applications.</p>)
+    : showPreApply ? (
       <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '8px' }}>
         <h4 style={{ marginBottom: '0.75rem' }}>Before you apply</h4>
 
@@ -292,7 +294,9 @@ async function handleFinalApply() {
               border: 'none', padding: '0.5rem 1rem',
               borderRadius: '6px', cursor: 'pointer'
             }}
+
           >
+            
             Apply
           </button>
           <button

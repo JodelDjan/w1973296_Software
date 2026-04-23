@@ -106,3 +106,13 @@ export const updateProfile = (formData) =>
     method: 'PATCH',
     body: JSON.stringify(formData)
   })
+
+//Withdraw application
+export const withdrawApplication = (postId) =>
+  apiRequest(`/posts/${postId}/withdraw/`, {
+    method: 'DELETE'
+  })
+
+//Applications Dashboard (Gen Users)
+export const getApplications = () =>
+  apiRequest('/posts/applications/')

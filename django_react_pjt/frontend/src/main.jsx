@@ -8,6 +8,7 @@ import Profile from "./pages/Profile"
 import Dashboard from "./pages/Dashboard"
 import PublicProfile from "./pages/PublicProfile"
 import EditProfile from "./pages/EditProfile"
+import ApplicationsDashboard from "./pages/ApplicationsDashboard"
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -20,6 +21,7 @@ createRoot(document.getElementById('root')).render(
         <Route path="/profile"         element={<Profile />} />
         <Route path="/profile/edit" element={<EditProfile />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/applications" element={<ApplicationsDashboard />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>

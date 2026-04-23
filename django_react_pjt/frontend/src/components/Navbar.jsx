@@ -24,6 +24,14 @@ export default function Navbar({ setPosts }) {
       >
         Profile
       </span>
+          {role === 'general_user' && (
+      <span
+        onClick={() => navigate('/applications')}
+        style={{ cursor: 'pointer', marginRight: '1rem' }}
+      >
+        My Applications
+      </span>
+    )}
     </nav>
   )
 }

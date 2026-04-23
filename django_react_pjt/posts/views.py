@@ -40,7 +40,6 @@ class ApplyToPostView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, post_id):
-        """Only general users can apply"""
         if request.user.role != CustomUser.GENERAL_USER:
             return Response(
                 {'error': 'Only general users can apply to posts.'},
@@ -55,19 +54,81 @@ class ApplyToPostView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        # check if already applied
+        if post.state == 'closed':
+            return Response(
+                {'error': 'This post is no longer accepting applications.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if post.max_participants is not None and post.max_participants <= 0:
+            return Response(
+                {'error': 'This post has reached its maximum number of participants.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         if Application.objects.filter(post=post, user=request.user).exists():
             return Response(
                 {'error': 'You have already applied to this post.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        application = Application.objects.create(
-            post=post,
-            user=request.user
-        )
+        application = Application.objects.create(post=post, user=request.user)
+
+        # decrease max_participants
+        if post.max_participants is not None:
+            post.max_participants -= 1
+            post.save()
+
         serializer = ApplicationSerializer(application)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class WithdrawApplicationView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, post_id):
+        try:
+            application = Application.objects.get(post_id=post_id, user=request.user)
+        except Application.DoesNotExist:
+            return Response(
+                {'error': 'Application not found.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        post = application.post
+
+        # restore max_participants
+        if post.max_participants is not None:
+            post.max_participants += 1
+            post.save()
+
+        application.delete()
+        return Response({'message': 'Application withdrawn.'}, status=status.HTTP_200_OK)
+
+
+class GeneralUserDashboardView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        if request.user.role != CustomUser.GENERAL_USER:
+            return Response(
+                {'error': 'Only general users can access this dashboard.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        applications = Application.objects.filter(user=request.user).select_related('post')
+        data = [
+            {
+                'application_id': app.id,
+                'post_id':        app.post.id,
+                'title':          app.post.title,
+                'author_name':    f"{app.post.author.first_name} {app.post.author.last_name}",
+                'state':          app.post.state,
+                'created_at':     app.created_at,
+            }
+            for app in applications
+        ]
+        return Response(data)
     
 class ResearcherDashboardView(APIView):
     permission_classes = [IsAuthenticated, IsResearcher]
