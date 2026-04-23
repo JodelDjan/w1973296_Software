@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { applyToPost, editPost, closePost } from '../api'
+import { applyToPost, editPost, closePost,  bookmarkPost, removeBookmark } from '../api'
+
 
 
 
@@ -23,7 +24,7 @@ const TAG_OPTIONS =[
   'Software Development',
 ]
 
-export default function PostCard({ post, setPosts, getPosts }) {
+export default function PostCard({ post, setPosts, getPosts, initialBookmarked = false, onUnbookmark}) {
   const role            = localStorage.getItem('role')
   const token           = localStorage.getItem('token')
   const isAuthenticated = !!token
@@ -51,6 +52,8 @@ export default function PostCard({ post, setPosts, getPosts }) {
   has_consented:      false,
   })
   const [preApplyError, setPreApplyError] = useState('')
+
+  const [bookmarked, setBookmarked] = useState(initialBookmarked)
 
 function handlePreApplyChange(e) {
   setPreApplyForm({ ...preApplyForm, [e.target.name]: e.target.checked })
@@ -113,6 +116,21 @@ async function handleFinalApply() {
       setError('Failed to update post.')
     }
   }
+
+async function handleBookmark() {
+  try {
+    if (bookmarked) {
+      await removeBookmark(post.id)
+      setBookmarked(false)
+      if (onUnbookmark) onUnbookmark(post.id)
+    } else {
+      await bookmarkPost(post.id)
+      setBookmarked(true)
+    }
+  } catch (err) {
+    setError('Failed to update bookmark.')
+  }
+}
 
   async function handleClose() {
     try {
@@ -239,6 +257,22 @@ async function handleFinalApply() {
               </button>
             </div>
           )}
+          {role === 'general_user' && (
+            <button
+              onClick={handleBookmark}
+              style={{
+                backgroundColor: bookmarked ? '#fef08a' : '#f3f4f6',
+                border:          'none',
+                padding:         '0.4rem 0.8rem',
+                borderRadius:    '6px',
+                cursor:          'pointer',
+                marginTop:       '0.5rem',
+                marginRight:     '0.5rem',
+              }}
+            >
+              {bookmarked ? '★ Bookmarked' : '☆ Bookmark'}
+            </button>
+          )}
 
 {/* Apply form for general users */}
 {!isAuthenticated ? (
@@ -296,7 +330,6 @@ async function handleFinalApply() {
             }}
 
           >
-            
             Apply
           </button>
           <button
@@ -333,5 +366,6 @@ async function handleFinalApply() {
   
     </div>
   )
+  
 }
 </div>)}

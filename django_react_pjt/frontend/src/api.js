@@ -116,3 +116,17 @@ export const withdrawApplication = (postId) =>
 //Applications Dashboard (Gen Users)
 export const getApplications = () =>
   apiRequest('/posts/applications/')
+
+//Bookmark controls
+export const bookmarkPost = (postId) =>
+  apiRequest(`/posts/${postId}/bookmark/`, { method: 'POST' })
+
+export const removeBookmark = (postId) =>
+  apiRequest(`/posts/${postId}/bookmark/`, { method: 'DELETE' })
+
+export const getBookmarks = () =>
+  apiRequest('/posts/bookmarks/')
+
+//Notifications
+export const getNotifications = () =>
+  apiRequest('/posts/notifications/')

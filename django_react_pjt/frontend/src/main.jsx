@@ -9,6 +9,8 @@ import Dashboard from "./pages/Dashboard"
 import PublicProfile from "./pages/PublicProfile"
 import EditProfile from "./pages/EditProfile"
 import ApplicationsDashboard from "./pages/ApplicationsDashboard"
+import Bookmarks      from "./pages/Bookmarks"
+import Notifications  from "./pages/Notifications"
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -22,6 +24,8 @@ createRoot(document.getElementById('root')).render(
         <Route path="/profile/edit" element={<EditProfile />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/applications" element={<ApplicationsDashboard />} />
+        <Route path="/bookmarks"     element={<Bookmarks />} />
+        <Route path="/notifications" element={<Notifications />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>
