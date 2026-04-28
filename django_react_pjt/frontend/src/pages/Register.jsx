@@ -153,13 +153,14 @@ export default function Register() {
   // Role selection screen
   if (!roleSelected) {
     return (
+      <div className="auth-page">
       <div style={{ maxWidth: '500px', margin: '0 auto', padding: '2rem' }}>
-        <h1 style={{ fontSize: '2.5rem', textAlign: 'left', marginBottom: '0.5rem' }}>
+        <h1 style={{ fontSize: '5rem', textAlign: 'left', marginBottom: '0.5rem' }}>
           Welcome
         </h1>
         <p style={{ fontSize: '1.1rem', marginBottom: '1.5rem' }}>Are you a</p>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'row', gap: '1rem' }}>
           <label style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer', fontSize: '1rem' }}>
             <input
               type="radio"
@@ -207,11 +208,13 @@ export default function Register() {
         </button>
         {error && <p style={{ color: 'red', marginTop: '0.5rem' }}>{error}</p>}
       </div>
+      </div>
     )
   }
 
   // Full registration form
   return (
+    <div className="auth-page">
     <div style={{ maxWidth: "500px", margin: "0 auto", padding: "1rem" }}>
       <h1>Create an Account</h1>
 
@@ -381,6 +384,7 @@ export default function Register() {
           {isLoading ? 'Registering...' : 'Register'}
         </button>
       </form>
+    </div>
     </div>
   )
 }

@@ -33,13 +33,10 @@ return (
             onClick={() => setActiveTab('feed')}
             style={{
               background:    'none',
-              border:        'none',
               cursor:        'pointer',
               paddingBottom: '0.75rem',
               fontSize:      '0.95rem',
               fontWeight:    activeTab === 'feed' ? '600' : '400',
-              color:         activeTab === 'feed' ? '#2563eb' : '#6b7280',
-              borderBottom:  activeTab === 'feed' ? '2px solid #2563eb' : '2px solid transparent',
               transition:    'all 0.2s',
             }}
           >
@@ -49,13 +46,10 @@ return (
             onClick={() => setActiveTab('directory')}
             style={{
               background:    'none',
-              border:        'none',
               cursor:        'pointer',
               paddingBottom: '0.75rem',
               fontSize:      '0.95rem',
               fontWeight:    activeTab === 'directory' ? '600' : '400',
-              color:         activeTab === 'directory' ? '#2563eb' : '#6b7280',
-              borderBottom:  activeTab === 'directory' ? '2px solid #2563eb' : '2px solid transparent',
               transition:    'all 0.2s',
             }}
           >

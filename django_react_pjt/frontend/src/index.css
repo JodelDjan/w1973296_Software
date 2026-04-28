@@ -56,6 +56,13 @@ body {
   max-width: 420px;
 }
 
+.auth-card input,
+.auth-card select,
+.auth-card textarea {
+  background-color: #fff;
+  color: #000;
+}
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;

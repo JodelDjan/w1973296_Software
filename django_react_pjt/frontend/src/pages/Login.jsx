@@ -50,6 +50,8 @@ async function handleSubmit(e) {
       }),
     })
 
+console.log('Login response:', data)
+
 localStorage.setItem('role',       data.role)
 localStorage.setItem('first_name', data.first_name)
 localStorage.setItem('last_name',  data.last_name)
