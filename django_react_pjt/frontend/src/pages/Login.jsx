@@ -53,6 +53,7 @@ async function handleSubmit(e) {
 localStorage.setItem('role',       data.role)
 localStorage.setItem('first_name', data.first_name)
 localStorage.setItem('last_name',  data.last_name)
+localStorage.setItem('token',      data.access)
 
     if (data.role === 'researcher') {
       navigate('/')
@@ -79,7 +80,10 @@ localStorage.setItem('last_name',  data.last_name)
 }
 
   return (
-    <div style={{ maxWidth: "400px", margin: "0 auto", padding: "1rem" }}>
+    <div className="auth-page">
+      <div className="auth-layout">
+        <div className="auth-card bg-white p-4 rounded shadow">
+
       <h1>Login</h1>
 
       <form onSubmit={handleSubmit}>
@@ -121,6 +125,8 @@ localStorage.setItem('last_name',  data.last_name)
           {isLoading ? "Logging in..." : "Login"}
         </button>
       </form>
-    </div>
+          </div>
+        </div>
+      </div>
   );
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { getBookmarks, removeBookmark, getPosts } from '../api'
 import { useNavigate } from 'react-router-dom'
-import PostCard from '../components/Postcard'
+import PostCard from '../components/PostCard'
 
 export default function Bookmarks() {
   const [bookmarkedPosts, setBookmarkedPosts] = useState([])

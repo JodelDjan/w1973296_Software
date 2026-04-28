@@ -23,12 +23,37 @@ a:hover {
 }
 
 body {
+  font-family: 'Inter', sans-serif;
   margin: 0;
   display: flex;
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  background-color: #96DDA5;
+  background-color: #043E54;
+}
+
+/*Login Page Styling*/
+.auth-page {
+  background-color: #FFFF67;
+  min-height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow-y: auto;
+}
+
+.auth-layout {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;       
+  justify-content: flex-start; 
+  padding-left: 10%;        
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
 }
 
 h1 {

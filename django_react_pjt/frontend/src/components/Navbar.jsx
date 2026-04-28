@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { getNotifications, searchPosts, getPosts } from '../api'
+import { useState } from 'react'
+import { searchPosts, getPosts } from '../api'
 
 const TAG_OPTIONS = [
   'Health and Fitness', 'Mental Health', 'Medicine', 'Law',
@@ -11,22 +10,9 @@ const TAG_OPTIONS = [
 ]
 
 export default function Navbar({ setPosts }) {
-  const navigate                        = useNavigate()
-  const role                            = localStorage.getItem('role')
-  const [unreadCount, setUnreadCount]   = useState(0)
-  const [query, setQuery]               = useState('')
-  const [showFilter, setShowFilter]     = useState(false)
-  const [selectedTag, setSelectedTag]   = useState('')
-
-  useEffect(() => {
-    if (role === 'general_user') {
-      getNotifications().then(data => {
-        if (Array.isArray(data)) {
-          setUnreadCount(data.filter(n => !n.is_read).length)
-        }
-      })
-    }
-  }, [])
+  const [query, setQuery]             = useState('')
+  const [showFilter, setShowFilter]   = useState(false)
+  const [selectedTag, setSelectedTag] = useState('')
 
   const handleSearch = () => {
     if (query.trim()) {
@@ -55,45 +41,72 @@ export default function Navbar({ setPosts }) {
   }
 
   return (
-    <nav style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem', borderBottom: '1px solid #e5e7eb' }}>
+    <nav style={{
+      position:        'fixed',
+      top:             0,
+      left:            '72px',
+      right:           0,
+      height:          '60px',
+      backgroundColor: '#96DDA5',
+      display:         'flex',
+      alignItems:      'center',
+      padding:         '0 1.5rem',
+      zIndex:          99,
+    }}>
+      <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
 
-      {/* Search bar with filter icon */}
-      <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        <input
-          type="text"
-          placeholder="Search posts..."
-          value={query}
-          onChange={e => setQuery(e.target.value)}
-          onKeyUp={handleSearch}
-          style={{ padding: '0.4rem 0.8rem', borderRadius: '6px', border: '1px solid #e5e7eb' }}
-        />
+        {/* Search input with icons inside */}
+        <div style={{
+          display:         'flex',
+          alignItems:      'center',
+          backgroundColor: '#f3f4f6',
+          borderRadius:    '8px',
+          padding:         '0.4rem 0.8rem',
+          gap:             '0.5rem',
+          width:           '320px',
+        }}>
+          <i
+            className="bi bi-search"
+            onClick={handleSearch}
+            style={{ color: '#6b7280', cursor: 'pointer', fontSize: '0.9rem' }}
+          ></i>
+          <input
+            type="text"
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            onKeyUp={e => e.key === 'Enter' && handleSearch()}
+            placeholder="Search posts..."
+            style={{
+              border:          'none',
+              background:      'none',
+              outline:         'none',
+              flex:            1,
+              fontSize:        '0.875rem',
+              fontFamily:      'Inter, sans-serif',
+            }}
+          />
+          <i
+            className={`bi bi-funnel${selectedTag ? '-fill' : ''}`}
+            onClick={() => setShowFilter(prev => !prev)}
+            style={{
+              color:  selectedTag ? '#2563eb' : '#6b7280',
+              cursor: 'pointer',
+              fontSize: '0.9rem',
+            }}
+          ></i>
+        </div>
 
-        <button
-          onClick={() => setShowFilter(prev => !prev)}
-          style={{
-            background:   selectedTag ? '#2563eb' : '#f3f4f6',
-            color:        selectedTag ? 'white' : 'black',
-            border:       'none',
-            borderRadius: '6px',
-            padding:      '0.4rem 0.6rem',
-            cursor:       'pointer',
-            fontSize:     '1rem',
-          }}
-          title="Filter by tag"
-        >
-          ⚙
-        </button>
-
+        {/* Filter dropdown */}
         {showFilter && (
           <div style={{
             position:        'absolute',
             top:             '2.5rem',
             left:            0,
-            backgroundColor: 'white',
+            backgroundColor: '#043E54',
             border:          '1px solid #e5e7eb',
             borderRadius:    '8px',
             padding:         '0.5rem',
-            zIndex:          1000,
+            zIndex:          300,
             width:           '220px',
             boxShadow:       '0 4px 12px rgba(0,0,0,0.1)',
             maxHeight:       '300px',
@@ -113,6 +126,7 @@ export default function Navbar({ setPosts }) {
                   cursor:          'pointer',
                   borderRadius:    '4px',
                   color:           selectedTag === tag ? '#2563eb' : 'black',
+                  fontSize:        '0.85rem',
                 }}
               >
                 {tag}
@@ -121,45 +135,6 @@ export default function Navbar({ setPosts }) {
           </div>
         )}
       </div>
-
-      {role === 'researcher' && (
-        <span onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }}>
-          Dashboard
-        </span>
-      )}
-
-      {role === 'general_user' && (
-        <>
-          <span onClick={() => navigate('/applications')} style={{ cursor: 'pointer' }}>
-            My Applications
-          </span>
-          <span onClick={() => navigate('/bookmarks')} style={{ cursor: 'pointer' }}>
-            Bookmarks
-          </span>
-          <span
-            onClick={() => navigate('/notifications')}
-            style={{ cursor: 'pointer', position: 'relative' }}
-          >
-            Notifications
-            {unreadCount > 0 && (
-              <span style={{
-                backgroundColor: '#dc2626',
-                color:           'white',
-                borderRadius:    '999px',
-                fontSize:        '0.7rem',
-                padding:         '0.1rem 0.4rem',
-                marginLeft:      '0.3rem',
-              }}>
-                {unreadCount}
-              </span>
-            )}
-          </span>
-        </>
-      )}
-
-      <span onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>
-        Profile
-      </span>
     </nav>
   )
 }
