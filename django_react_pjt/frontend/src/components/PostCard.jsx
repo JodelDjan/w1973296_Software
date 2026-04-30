@@ -237,7 +237,8 @@ async function handleBookmark() {
           <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem' }}>
             <button
               onClick={() => setIsEditing(true)}
-              style={{ backgroundColor: '#96DDA5', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem' }}
+              style={{ backgroundColor: '#96DDA5', border: 'none', padding: '0.4rem 0.8rem', 
+                borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem' }}
             >
               <i className="bi bi-pencil"></i>
             </button>
