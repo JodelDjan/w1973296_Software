@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Post, Application
 from django.utils import timezone
+import json
 from users.models import TAG_CHOICES
 
 class PostSerializer(serializers.ModelSerializer):
@@ -31,7 +32,7 @@ class PostSerializer(serializers.ModelSerializer):
         return obj.author.role
         
 class CreatePostSerializer(serializers.ModelSerializer):
-    tags = serializers.MultipleChoiceField(choices=TAG_CHOICES)
+    tags = serializers.JSONField()
 
     class Meta:
         model  = Post
@@ -41,6 +42,10 @@ class CreatePostSerializer(serializers.ModelSerializer):
         ]
 
     def validate_tags(self, value):
+        if isinstance(value, str):
+            value = json.loads(value)
+        if not value:
+            raise serializers.ValidationError("At least one tag is required.")
         return list(value)
 
     def validate(self, data):

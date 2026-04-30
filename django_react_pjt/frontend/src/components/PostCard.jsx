@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { applyToPost, editPost, closePost,  bookmarkPost, removeBookmark } from '../api'
+import { useState, useEffect } from 'react'
+import { applyToPost, editPost, closePost,  bookmarkPost, removeBookmark, getApplications, getBookmarks } from '../api'
 import EditPost from './EditPost'
 import { createPortal } from 'react-dom'
 
@@ -55,6 +55,22 @@ export default function PostCard({ post, setPosts, getPosts, initialBookmarked =
 
   const [bookmarked, setBookmarked] = useState(initialBookmarked)
 
+useEffect(() => {
+  const role = localStorage.getItem('role')
+  if (role === 'general_user') {
+    Promise.all([getApplications(), getBookmarks()]).then(([applications, bookmarks]) => {
+      if (Array.isArray(applications)) {
+        const hasApplied = applications.some(app => app.post_id === post.id)
+        setApplied(hasApplied)
+      }
+      if (Array.isArray(bookmarks)) {
+        const hasBookmarked = bookmarks.some(b => b.post_id === post.id)
+        setBookmarked(hasBookmarked)
+      }
+    })
+  }
+}, [post.id])
+
 function handlePreApplyChange(e) {
   setPreApplyForm({ ...preApplyForm, [e.target.name]: e.target.checked })
   if (preApplyError) setPreApplyError('')
@@ -71,6 +87,12 @@ async function handleFinalApply() {
   try {
     await applyToPost(post.id)
     setApplied(true)
+    setShowPreApply(false)
+    if (getPosts) {
+      getPosts().then(data => {
+        if (Array.isArray(data)) setPosts(data)
+      })
+    }
     window.open(post.research_link, '_blank')
   } catch (err) {
     setPreApplyError('Failed to submit application.')
@@ -143,53 +165,78 @@ async function handleBookmark() {
     }
   }
 
-  return (
-    <div className="post-card">
+ return (
+  <div style={{
+    backgroundColor: '#fffF67',
+    borderRadius:    '12px',
+    
+    padding:         '1.25rem',
+    marginBottom:    '1rem',
+    fontFamily:      'Inter, sans-serif',
+  }}>
+
+    {/* Closed badge */}
+    {post.state === 'closed' && (
+      <span style={{
+        backgroundColor: '#fee2e2',
+        color:           '#dc2626',
+        padding:         '0.2rem 0.6rem',
+        borderRadius:    '999px',
+        fontSize:        '0.75rem',
+        marginBottom:    '0.75rem',
+        display:         'inline-block'
+      }}>
+        Closed
+      </span>
+    )}
+
+    {/* Post display */}
     <div>
-      {/* Closed badge */}
-      {post.state === 'closed' && (
-        <span style={{
-          backgroundColor: '#fee2e2',
-          color:           '#dc2626',
-          padding:         '0.2rem 0.6rem',
-          borderRadius:    '999px',
-          fontSize:        '0.75rem',
-          marginBottom:    '0.5rem',
-          display:         'inline-block'
+      {/* Author row */}
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '0.75rem' }}>
+        <div style={{
+          width:           '44px',
+          height:          '44px',
+          borderRadius:    '50%',
+          backgroundColor: '#2563eb',
+          color:           'white',
+          display:         'flex',
+          alignItems:      'center',
+          justifyContent:  'center',
+          fontWeight:      '600',
+          fontSize:        '1rem',
+          marginRight:     '0.75rem',
+          flexShrink:      0,
         }}>
-          Closed
-        </span>
-      )}
-
-
-
-          {/* Post display */}
-          <div>
-            <h2>{post.title}</h2>
-            <p>{post.body}</p>
-            <p>Start Date: {post.start_date}</p>
-            <p>Tags: {post.tags && post.tags.join(', ')}</p>
-            <p>Created: {new Date(post.created_at).toLocaleDateString()}</p>
-            <p>Max Participants: {post.max_participants}</p>
-            <p>Posted by: {post.author_name}</p>
-
-      {/* Researcher controls */}
-      {role === 'researcher' && isOwnPost && post.state !== 'closed' && (
-        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
-          <button
-            onClick={() => setIsEditing(true)}
-            style={{ backgroundColor: '#f3f4f6', border: 'none', padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer' }}
-          >
-            Edit
-          </button>
-          <button
-            onClick={handleClose}
-            style={{ backgroundColor: '#fee2e2', color: '#dc2626', border: 'none', padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer' }}
-          >
-            Close Post
-          </button>
+          {post.author_name ? post.author_name.charAt(0).toUpperCase() : '?'}
         </div>
-      )}
+        <div>
+          <p style={{ margin: 0, fontWeight: '600', fontSize: '0.95rem', color: '#1a1a1a' }}>
+            {post.author_name}
+          </p>
+          <p style={{ margin: 0, fontSize: '0.78rem', color: '#6b7280' }}>
+            Researcher · {new Date(post.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+          </p>
+        </div>
+
+        {/* Researcher controls */}
+        {role === 'researcher' && isOwnPost && post.state !== 'closed' && (
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.5rem' }}>
+            <button
+              onClick={() => setIsEditing(true)}
+              style={{ backgroundColor: '#f3f4f6', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem' }}
+            >
+              <i className="bi bi-pencil"></i> Edit
+            </button>
+            <button
+              onClick={handleClose}
+              style={{ backgroundColor: '#fee2e2', color: '#dc2626', border: 'none', padding: '0.4rem 0.8rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.8rem' }}
+            >
+              <i className="bi bi-x-circle"></i> Close
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* Edit modal */}
       {isEditing && createPortal(
@@ -201,98 +248,173 @@ async function handleBookmark() {
         document.body
       )}
 
+      {/* Title */}
+      <h5 style={{ fontWeight: '700', fontSize: '1.05rem', marginBottom: '0.4rem', color: '#1a1a1a' }}>
+        {post.title}
+      </h5>
 
+      {/* Body */}
+      <p style={{ fontSize: '0.9rem', color: '#374151', lineHeight: '1.6', marginBottom: '0.75rem' }}>
+        {post.body}
+      </p>
 
-{/* Apply form for general users */}
-{!isAuthenticated ? (
-  <p><a href="/login">Log in</a> to apply to this post.</p>
-
-) : role === 'general_user' && post.state !== 'closed' ? (
-  <>
-    {applied ? (
-      <p>Application submitted successfully.</p>
-    ) : post.max_participants === 0 ? (
-      <p style={{ color: '#dc2626' }}>This post is no longer accepting applications.</p>)
-    : showPreApply ? (
-      <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '8px' }}>
-        <h4 style={{ marginBottom: '0.75rem' }}>Before you apply</h4>
-
-        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-          <input
-            type="checkbox"
-            name="has_read_post"
-            checked={preApplyForm.has_read_post}
-            onChange={handlePreApplyChange}
-          />
-          I have read the research post thoroughly
-        </label>
-
-        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-          <input
-            type="checkbox"
-            name="meets_requirements"
-            checked={preApplyForm.meets_requirements}
-            onChange={handlePreApplyChange}
-          />
-          I meet the requirements for this research
-        </label>
-
-        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-          <input
-            type="checkbox"
-            name="has_consented"
-            checked={preApplyForm.has_consented}
-            onChange={handlePreApplyChange}
-          />
-          I consent to participate in this research
-        </label>
-
-        {preApplyError && <p style={{ color: 'red', fontSize: '0.85rem' }}>{preApplyError}</p>}
-
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button
-            onClick={handleFinalApply}
-            style={{
-              backgroundColor: '#2563eb', color: 'white',
-              border: 'none', padding: '0.5rem 1rem',
-              borderRadius: '6px', cursor: 'pointer'
-            }}
-
-          >
-            Apply
-          </button>
-          <button
-            onClick={() => setShowPreApply(false)}
-            style={{
-              backgroundColor: '#f3f4f6', border: 'none',
-              padding: '0.5rem 1rem', borderRadius: '6px', cursor: 'pointer'
-            }}
-          >
-            Cancel
-          </button>
-        </div>
+      {/* Meta info */}
+      <div style={{ display: 'flex', gap: '1rem', fontSize: '0.8rem', color: '#6b7280', marginBottom: '0.75rem' }}>
+        <span><i className="bi bi-calendar3"></i> {post.start_date}</span>
+        <span><i className="bi bi-people"></i> {post.max_participants} participants</span>
       </div>
 
-    ) : (
-      <button
-        onClick={() => setShowPreApply(true)}
-        style={{
-          backgroundColor: '#2563eb', color: 'white',
-          border: 'none', padding: '0.5rem 1rem',
-          borderRadius: '6px', cursor: 'pointer',
-          marginTop: '1rem'
-        }}
-      >
-        Apply
-      </button>
-    )}
-    {error && <p style={{ color: 'red' }}>{error}</p>}
-  </>
+      {/* Tags */}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginBottom: '0.75rem' }}>
+        {post.tags && post.tags.map(tag => (
+          <span key={tag} style={{
+            padding:         '0.2rem 0.6rem',
+            borderRadius:    '999px',
+            backgroundColor: '#eff6ff',
+            color:           '#2563eb',
+            fontSize:        '0.75rem',
+            fontWeight:      '500',
+          }}>
+            {tag}
+          </span>
+        ))}
+      </div>
 
-) : role === 'general_user' && post.state === 'closed' ? (
-  <p style={{ color: '#dc2626' }}>This post is no longer accepting applications.</p>
-) : null}
-  
+      {/* Image */}
+      {post.image && (
+        <img
+          src={`http://localhost:8000${post.image}`}
+          alt={post.title}
+          style={{ width: '100%', borderRadius: '8px', marginBottom: '0.75rem', maxHeight: '300px', objectFit: 'cover' }}
+        />
+      )}
+
+      {/* Divider */}
+      <hr style={{ borderColor: '#e5e7eb', margin: '0.75rem 0' }} />
+
+      {/* Bookmark and apply row */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+        {role === 'general_user' && (
+          <button
+            onClick={handleBookmark}
+            style={{
+              background:   'none',
+              border:       'none',
+              cursor:       'pointer',
+              color:        bookmarked ? '#2563eb' : '#6b7280',
+              fontSize:     '0.85rem',
+              display:      'flex',
+              alignItems:   'center',
+              gap:          '0.3rem',
+              padding:      '0.3rem 0.5rem',
+              borderRadius: '6px',
+            }}
+          >
+            <i className={`bi bi-bookmark${bookmarked ? '-fill' : ''}`}></i>
+            {bookmarked ? 'Bookmarked' : 'Bookmark'}
+          </button>
+        )}
+
+        {/* Apply section */}
+        <div style={{ marginLeft: 'auto' }}>
+          {!isAuthenticated ? (
+            <p style={{ fontSize: '0.85rem', margin: 0 }}>
+              <a href="/login" style={{ color: '#2563eb' }}>Log in</a> to apply.
+            </p>
+          ) : role === 'general_user' && post.state !== 'closed' ? (
+            <>
+              {applied ? (
+                <span style={{ color: '#16a34a', fontSize: '0.85rem' }}>
+                  <i className="bi bi-check-circle"></i> Applied
+                </span>
+              ) : post.max_participants === 0 ? (
+                <span style={{ color: '#dc2626', fontSize: '0.85rem' }}>No spots remaining</span>
+                          ) : showPreApply ? (
+              <>
+                {/* Backdrop */}
+                <div
+                  onClick={() => setShowPreApply(false)}
+                  style={{
+                    position:        'fixed',
+                    inset:           0,
+                    backgroundColor: 'rgba(0,0,0,0.3)',
+                    zIndex:          999,
+                  }}
+                />
+
+                {/* Pre-apply modal */}
+                <div style={{
+                  position:        'fixed',
+                  top:             '50%',
+                  left:            '50%',
+                  transform:       'translate(-50%, -50%)',
+                  backgroundColor: '#fff',
+                  borderRadius:    '12px',
+                  padding:         '1.5rem',
+                  width:           '90%',
+                  maxWidth:        '420px',
+                  zIndex:          1000,
+                  boxShadow:       '0 8px 24px rgba(0,0,0,0.15)',
+                }}>
+                  <h6 style={{ marginBottom: '0.75rem' }}>Before you apply</h6>
+
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.85rem' }}>
+                    <input type="checkbox" name="has_read_post" checked={preApplyForm.has_read_post} onChange={handlePreApplyChange} />
+                    I have read the research post thoroughly
+                  </label>
+
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem', fontSize: '0.85rem' }}>
+                    <input type="checkbox" name="meets_requirements" checked={preApplyForm.meets_requirements} onChange={handlePreApplyChange} />
+                    I meet the requirements for this research
+                  </label>
+
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem', fontSize: '0.85rem' }}>
+                    <input type="checkbox" name="has_consented" checked={preApplyForm.has_consented} onChange={handlePreApplyChange} />
+                    I consent to participate in this research
+                  </label>
+
+                  {preApplyError && <p style={{ color: 'red', fontSize: '0.8rem' }}>{preApplyError}</p>}
+
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    <button
+                      onClick={handleFinalApply}
+                      style={{ backgroundColor: '#2563eb', color: 'white', border: 'none', padding: '0.4rem 1rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem' }}
+                    >
+                      Confirm & Apply
+                    </button>
+                    <button
+                      onClick={() => setShowPreApply(false)}
+                      style={{ backgroundColor: '#f3f4f6', border: 'none', padding: '0.4rem 1rem', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem' }}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </>
+              ) : (
+                <button
+                  onClick={() => setShowPreApply(true)}
+                  style={{
+                    backgroundColor: '#2563eb',
+                    color:           'white',
+                    border:          'none',
+                    padding:         '0.4rem 1rem',
+                    borderRadius:    '6px',
+                    cursor:          'pointer',
+                    fontSize:        '0.85rem',
+                  }}
+                >
+                  Apply
+                </button>
+              )}
+              {error && <p style={{ color: 'red', fontSize: '0.8rem' }}>{error}</p>}
+            </>
+          ) : role === 'general_user' && post.state === 'closed' ? (
+            <span style={{ color: '#dc2626', fontSize: '0.85rem' }}>This post is no longer accepting applications.</span>
+          ) : null}
+        </div>
+      </div>
     </div>
-</div>
-</div>)}
+  </div>
+)}
+

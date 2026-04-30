@@ -43,12 +43,14 @@ export const createPost = (formData) => {
   data.append('max_participants', formData.max_participants)
   data.append('state',            formData.state || 'open')
   data.append('research_link',    formData.research_link || '')
-  formData.tags.forEach(tag => data.append('tags', tag))
+  data.append('tags',             JSON.stringify(formData.tags))
   if (formData.image) data.append('image', formData.image)
 
+  const authToken = localStorage.getItem('token')
   return fetch(`${BASE_URL}/posts/create/`, {
     method:      'POST',
     credentials: 'include',
+    headers:     { Authorization: `Bearer ${authToken}` },
     body:        data,
   }).then(res => res.json())
 }
