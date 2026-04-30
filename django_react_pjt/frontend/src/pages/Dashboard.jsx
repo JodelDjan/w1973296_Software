@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { getDashboard } from '../api'
 import { useNavigate } from 'react-router-dom'
 import CreatePost from '../components/CreatePost'
-import Sidebar from '../components/Sidebar'
+import Sidebar from '../components/SideBar'
 
 export default function Dashboard() {
   const [posts, setPosts]               = useState([])
